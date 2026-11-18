@@ -1,0 +1,14 @@
+# 分析器与评测产物
+.taint-cache/
+*.sarif
+findings*.json
+analyzer/*.exe
+analyzer/*.test
+analyzer/cpu.prof
+
+# Python
+__pycache__/
+*.pyc
+
+# 性能合成语料（按需用 perfgen 重新生成，不入库）
+perfdata/

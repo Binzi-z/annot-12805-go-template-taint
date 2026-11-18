@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "comment": "声明式污点规则。分析器只自带通用引擎，所有源/汇聚点/净化/传播规则都在本文件声明，不依赖任何现成规则集。",
+  "sources": [
+    {"id": "req_query",      "chain": ["URL", "Query", "Get"], "origin": "request_param", "desc": "r.URL.Query().Get"},
+    {"id": "req_form",       "method": "FormValue", "origin": "request_param", "desc": "r.FormValue"},
+    {"id": "req_postform",   "chain": ["PostForm", "Get"], "origin": "request_param"},
+    {"id": "req_header",     "chain": ["Header", "Get"], "origin": "request_param"},
+    {"id": "req_json_body",  "chain": ["NewDecoder", "Decode"], "origin": "request_param", "taintArgs": [0], "desc": "json.NewDecoder(r.Body).Decode(&x)"},
+    {"id": "req_json_decode", "method": "Decode", "origin": "request_param", "taintArgs": [0], "desc": "解码器接口/包装后的 Decode（语法层按方法名保守识别，误报由污点门槛控制）"},
+    {"id": "req_readall",    "pkg": "io", "name": "ReadAll", "origin": "request_param", "desc": "io.ReadAll 请求体（保守按请求源处理）"},
+    {"id": "db_config_scan", "method": "Scan", "origin": "ops_config_db", "requiresConfigQuery": true, "desc": "仅配置表查询产生的 Rows，Scan 目标才染污"},
+    {"id": "db_cfg_rowscan", "chain": ["QueryRow", "Scan"], "origin": "ops_config_db", "requiresConfigQuery": true, "taintArgs": [0]},
+    {"id": "cfg_accessor",   "names": ["LoadTemplateConfig", "LoadConfig", "configrepo.Get", "GetTemplateConfig"], "origin": "ops_config_accessor", "desc": "显式登记的运营配置访问器"}
+  ],
+  "db_config": {
+    "comment": "数据库污点建模：句柄不染污；只有查询串命中配置表清单的只读查询，其 Scan 目标才染污；未命中或动态 SQL 默认不染污，避免整库污染。",
+    "tables": ["ops_template", "ops_config", "sys_config", "tpl_config"],
+    "taint_on_dynamic_query": false
+  },
+  "sinks": [
+    {"id": "tpl_text_parse",     "pkg": "text/template", "name": "Parse",          "args": [0],        "accept": ["tpl_whitelist"], "desc": "模板文本含函数调用即 RCE（原始事故形态）"},
+    {"id": "tpl_html_parse",     "pkg": "html/template", "name": "Parse",          "args": [0],        "accept": ["tpl_whitelist"]},
+    {"id": "tpl_parse_files",    "name": "ParseFiles",   "args": [0, 1, 2],        "accept": ["path_clean", "tpl_whitelist"], "desc": "动态模板路径"},
+    {"id": "tpl_parse_glob",     "name": "ParseGlob",    "args": [0],              "accept": ["path_clean", "tpl_whitelist"]},
+    {"id": "tpl_execute",        "name": "Execute",      "receiver": "*template.Template", "args": [1], "accept": ["html_escape", "tpl_whitelist"], "desc": "模板引擎 render"},
+    {"id": "tpl_execute_tpl",    "name": "ExecuteTemplate", "args": [1, 2],        "accept": ["tpl_whitelist", "html_escape"], "desc": "动态模板名/数据"},
+    {"id": "macro_expand",       "pkg": "os", "name": "Expand",                 "args": [0],        "accept": ["macro_guard"]},
+    {"id": "macro_expand_env",   "pkg": "os", "name": "ExpandEnv",              "args": [0],        "accept": ["macro_guard"], "desc": "宏展开可触达环境变量"},
+    {"id": "macro_custom",       "names": ["ExpandMacro", "RenderMacro"],         "args": [0],        "accept": ["macro_guard", "tpl_whitelist"]},
+
+    {"id": "sql_injection",      "pkg": "database/sql", "name": "Query",  "receiver": "*sql.DB",  "args": [0], "accept": ["sql_quote_strip"]},
+    {"id": "sql_injection_row",  "pkg": "database/sql", "name": "QueryRow", "receiver": "*sql.DB", "args": [0], "accept": ["sql_quote_strip"]},
+    {"id": "command_injection",  "pkg": "os/exec", "name": "Command",          "args": [2, 3, 4, 5], "accept": ["digits_filter", "cmd_allowlist"]},
+    {"id": "path_traversal",     "pkg": "os", "name": "Open",                  "args": [0],        "accept": ["path_clean", "path_allowlist"]},
+    {"id": "ssrf",               "pkg": "net/http", "name": "Get",             "args": [0],        "accept": ["host_allowlist"]}
+  ],
+  "sanitizers": [
+    {"id": "html_escape",      "pkg": "html", "name": "EscapeString"},
+    {"id": "html_escape",      "pkg": "html/template", "name": "HTMLEscapeString"},
+    {"id": "url_escape",       "pkg": "net/url", "name": "QueryEscape", "only": ["ssrf"]},
+    {"id": "path_clean",       "pkg": "path/filepath", "name": "Clean", "only": ["tpl_parse_files", "tpl_parse_glob", "path_traversal"]},
+    {"id": "sql_quote_strip",  "pkg": "strings", "name": "ReplaceAll", "only": ["sql_injection", "sql_injection_row"]},
+    {"id": "digits_filter",    "names": ["onlyDigits", "SanitizeDigits"], "only": ["command_injection"]},
+    {"id": "host_allowlist",   "names": ["allowlistHost", "AllowURL"], "only": ["ssrf"]},
+    {"id": "path_allowlist",   "names": ["allowlistPath"], "only": ["path_traversal", "tpl_parse_files", "tpl_parse_glob"]},
+    {"id": "cmd_allowlist",    "names": ["allowlistCmd"], "only": ["command_injection"]},
+    {"id": "tpl_whitelist",    "names": ["isAllowedTpl", "allowedTemplate", "WhitelistTpl", "guarded"]},
+    {"id": "macro_guard",      "names": ["guardMacro", "SanitizeMacro"], "only": ["macro_expand", "macro_expand_env", "macro_custom"]}
+  ],
+  "propagators": [
+    {"name": "append", "mode": "slice_append"}, {"name": "copy"}, {"pkg": "fmt", "name": "Sprint"}, {"pkg": "fmt", "name": "Sprintf"},
+    {"pkg": "fmt", "name": "Sprintln"}, {"pkg": "fmt", "name": "Errorf"}, {"pkg": "errors", "name": "New"},
+    {"pkg": "strings", "name": "Join"}, {"pkg": "strings", "name": "NewReader"},
+    {"pkg": "path/filepath", "name": "Join"}, {"pkg": "path", "name": "Join"},
+    {"ident": "string"}, {"ident": "[]byte"}, {"pkg": "bytes", "name": "NewBuffer"},
+    {"name": "WriteString", "mode": "recv_write"}, {"name": "String", "mode": "recv_read"},
+    {"name": "WriteByte", "mode": "recv_write"}, {"name": "Write", "mode": "recv_write"},
+    {"pkg": "reflect", "name": "ValueOf", "mode": "passthrough"},
+    {"name": "Call", "mode": "reflect_call"}, {"name": "MethodByName", "mode": "reflect_method"},
+    {"name": "TypeAssert"}, {"pkg": "slices", "name": "Clone"}
+  ],
+  "config": {
+    "max_worklist_rounds": 8,
+    "reflect_dynamic_overapprox": true,
+    "entrypoints_hint": ["Handle", "Handler", "ServeHTTP"]
+  }
+}

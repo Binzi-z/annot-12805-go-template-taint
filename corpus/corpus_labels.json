@@ -1,0 +1,250 @@
+{
+  "vulns": [
+    {
+      "id": "V18InterfaceDispatch",
+      "sink": "tpl_text_parse",
+      "file": "crosspkg/iface/iface.go",
+      "line": 14,
+      "entry": "V18InterfaceDispatch"
+    },
+    {
+      "id": "V19InterfaceField",
+      "sink": "tpl_text_parse",
+      "file": "crosspkg/iface/iface.go",
+      "line": 21,
+      "entry": "V19InterfaceField"
+    },
+    {
+      "id": "V22AccessorToParse",
+      "sink": "tpl_text_parse",
+      "file": "dbconfig/dbconfig.go",
+      "line": 15,
+      "entry": "V22AccessorToParse"
+    },
+    {
+      "id": "V23ConfigRowsToParse",
+      "sink": "tpl_text_parse",
+      "file": "dbconfig/dbconfig.go",
+      "line": 23,
+      "entry": "V23ConfigRowsToParse"
+    },
+    {
+      "id": "V28ThreeLevelWrap",
+      "sink": "tpl_text_parse",
+      "file": "deep/deep.go",
+      "line": 22,
+      "entry": "V28ThreeLevelWrap"
+    },
+    {
+      "id": "V29GlobalCarry",
+      "sink": "tpl_text_parse",
+      "file": "deep/deep.go",
+      "line": 31,
+      "entry": "V29GlobalCarry"
+    },
+    {
+      "id": "V30SliceCarry",
+      "sink": "tpl_text_parse",
+      "file": "deep/deep.go",
+      "line": 44,
+      "entry": "V30SliceCarry"
+    },
+    {
+      "id": "V31MapCarry",
+      "sink": "tpl_text_parse",
+      "file": "deep/deep.go",
+      "line": 52,
+      "entry": "V31MapCarry"
+    },
+    {
+      "id": "V32BranchMerge",
+      "sink": "tpl_text_parse",
+      "file": "deep/deep.go",
+      "line": 64,
+      "entry": "V32BranchMerge"
+    },
+    {
+      "id": "V33ByteConversion",
+      "sink": "tpl_text_parse",
+      "file": "deep/deep.go",
+      "line": 72,
+      "entry": "V33ByteConversion"
+    },
+    {
+      "id": "V34AppendCarry",
+      "sink": "tpl_text_parse",
+      "file": "deep/deep.go",
+      "line": 82,
+      "entry": "V34AppendCarry"
+    },
+    {
+      "id": "V14ParseFilesReq",
+      "sink": "tpl_parse_files",
+      "file": "dynpath/dynpath.go",
+      "line": 14,
+      "entry": "V14ParseFilesReq"
+    },
+    {
+      "id": "V15ConcatParseFiles",
+      "sink": "tpl_parse_files",
+      "file": "dynpath/dynpath.go",
+      "line": 21,
+      "entry": "V15ConcatParseFiles"
+    },
+    {
+      "id": "V16ParseGlobReq",
+      "sink": "tpl_parse_glob",
+      "file": "dynpath/dynpath.go",
+      "line": 27,
+      "entry": "V16ParseGlobReq"
+    },
+    {
+      "id": "V17CrossPkgDynPath",
+      "sink": "tpl_parse_files",
+      "file": "dynpath/dynpath.go",
+      "line": 33,
+      "entry": "V17CrossPkgDynPath"
+    },
+    {
+      "id": "V35JoinIntoTemplate",
+      "sink": "tpl_text_parse",
+      "file": "extra/extra.go",
+      "line": 15,
+      "entry": "V35JoinIntoTemplate"
+    },
+    {
+      "id": "V10ExpandEnvReq",
+      "sink": "macro_expand_env",
+      "file": "macro/macro.go",
+      "line": 14,
+      "entry": "V10ExpandEnvReq"
+    },
+    {
+      "id": "V11ExpandReq",
+      "sink": "macro_expand",
+      "file": "macro/macro.go",
+      "line": 20,
+      "entry": "V11ExpandReq"
+    },
+    {
+      "id": "V12CrossPkgMacro",
+      "sink": "macro_expand_env",
+      "file": "macro/macro.go",
+      "line": 26,
+      "entry": "V12CrossPkgMacro"
+    },
+    {
+      "id": "V13CustomMacro",
+      "sink": "macro_custom",
+      "file": "macro/macro.go",
+      "line": 32,
+      "entry": "V13CustomMacro"
+    },
+    {
+      "id": "V20ReflectCall",
+      "sink": "reflect_call",
+      "file": "reflect/reflect.go",
+      "line": 24,
+      "entry": "V20ReflectCall"
+    },
+    {
+      "id": "V21ReflectCallWrapped",
+      "sink": "reflect_call",
+      "file": "reflect/reflect.go",
+      "line": 32,
+      "entry": "V21ReflectCallWrapped"
+    },
+    {
+      "id": "V24HeaderToParse",
+      "sink": "tpl_text_parse",
+      "file": "reqsrc/reqsrc.go",
+      "line": 13,
+      "entry": "V24HeaderToParse"
+    },
+    {
+      "id": "V25PostFormToParse",
+      "sink": "tpl_text_parse",
+      "file": "reqsrc/reqsrc.go",
+      "line": 20,
+      "entry": "V25PostFormToParse"
+    },
+    {
+      "id": "V26JSONBodyToParse",
+      "sink": "tpl_text_parse",
+      "file": "reqsrc/reqsrc.go",
+      "line": 29,
+      "entry": "V26JSONBodyToParse"
+    },
+    {
+      "id": "V27ReadAllToParse",
+      "sink": "tpl_text_parse",
+      "file": "reqsrc/reqsrc.go",
+      "line": 36,
+      "entry": "V27ReadAllToParse"
+    },
+    {
+      "id": "V06ConcatIntoTemplate",
+      "sink": "tpl_text_parse",
+      "file": "strtpl/strtpl.go",
+      "line": 17,
+      "entry": "V06ConcatIntoTemplate"
+    },
+    {
+      "id": "V07BuilderIntoTemplate",
+      "sink": "tpl_text_parse",
+      "file": "strtpl/strtpl.go",
+      "line": 26,
+      "entry": "V07BuilderIntoTemplate"
+    },
+    {
+      "id": "V08ConfigConcatTemplate",
+      "sink": "tpl_text_parse",
+      "file": "strtpl/strtpl.go",
+      "line": 34,
+      "entry": "V08ConfigConcatTemplate"
+    },
+    {
+      "id": "V09SprintfTemplate",
+      "sink": "tpl_text_parse",
+      "file": "strtpl/strtpl.go",
+      "line": 42,
+      "entry": "V09SprintfTemplate"
+    },
+    {
+      "id": "V01ReqToTextParse",
+      "sink": "tpl_text_parse",
+      "file": "tplrender/tplrender.go",
+      "line": 17,
+      "entry": "V01ReqToTextParse"
+    },
+    {
+      "id": "V02ReqToHTMLExecute",
+      "sink": "tpl_execute",
+      "file": "tplrender/tplrender.go",
+      "line": 24,
+      "entry": "V02ReqToHTMLExecute"
+    },
+    {
+      "id": "V03ConfigToCrossPkgParse",
+      "sink": "tpl_text_parse",
+      "file": "tplrender/tplrender.go",
+      "line": 30,
+      "entry": "V03ConfigToCrossPkgParse"
+    },
+    {
+      "id": "V04ConfigRowsToParse",
+      "sink": "tpl_text_parse",
+      "file": "tplrender/tplrender.go",
+      "line": 38,
+      "entry": "V04ConfigRowsToParse"
+    },
+    {
+      "id": "V05FormToExecuteTemplate",
+      "sink": "tpl_execute_tpl",
+      "file": "tplrender/tplrender.go",
+      "line": 46,
+      "entry": "V05FormToExecuteTemplate"
+    }
+  ],
+  "total": 35
+}

@@ -1,0 +1,59 @@
+name: taint-analysis-ci
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build analyzer
+        working-directory: analyzer
+        run: go build ./...
+
+      - name: Unit tests
+        working-directory: analyzer
+        run: go test ./... -count=1
+
+      - name: Verify ground-truth labels are up to date
+        working-directory: corpus
+        run: |
+          go run ./genlabels . /tmp/regenerated.json
+          diff <(python3 -m json.tool corpus_labels.json) <(python3 -m json.tool /tmp/regenerated.json)
+
+      - name: Evaluate 50-sample corpus (recall >= 85%, FP <= 15%)
+        run: python3 -I eval_corpus.py
+
+      - name: Regression on original 14-handler corpus
+        run: |
+          cd analyzer
+          go run ./main -target ../pkg -rel-base .. -rules rules/rules.json -out /tmp/pkg.json -json
+          cd ..
+          python3 eval.py /tmp/pkg.json
+
+      - name: SARIF smoke test
+        working-directory: analyzer
+        run: |
+          go run ./main -target ../corpus -rules rules/rules.json -out /tmp/corpus.sarif
+          python3 -I -c "import json; d=json.load(open('/tmp/corpus.sarif')); assert d['version']=='2.1.0'; assert d['runs'][0]['results']"
+
+      - name: Incremental mode smoke test
+        working-directory: analyzer
+        run: |
+          go run ./main -target ../corpus -rules rules/rules.json -out /tmp/full.sarif -cache /tmp/taint-cache
+          go run ./main -target ../corpus -rules rules/rules.json -out /tmp/inc.sarif -incremental -cache /tmp/taint-cache
+          test -s /tmp/inc.sarif
