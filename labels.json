@@ -1,0 +1,69 @@
+{
+ "vulns": [
+  {
+   "id": "v00",
+   "sink": "sql_injection",
+   "label": "SQL 注入",
+   "file": "pkg/handlers/handlers.go",
+   "line": 74,
+   "entry": "Handle00"
+  },
+  {
+   "id": "v01",
+   "sink": "command_injection",
+   "label": "命令注入",
+   "file": "pkg/handlers/handlers.go",
+   "line": 86,
+   "entry": "Handle01"
+  },
+  {
+   "id": "v02",
+   "sink": "path_traversal",
+   "label": "路径穿越",
+   "file": "pkg/handlers/handlers.go",
+   "line": 98,
+   "entry": "Handle02"
+  },
+  {
+   "id": "v03",
+   "sink": "ssrf",
+   "label": "SSRF",
+   "file": "pkg/handlers/handlers.go",
+   "line": 110,
+   "entry": "Handle03"
+  },
+  {
+   "id": "v04",
+   "sink": "sql_injection",
+   "label": "SQL 注入",
+   "file": "pkg/handlers/handlers.go",
+   "line": 122,
+   "entry": "Handle04"
+  },
+  {
+   "id": "v05",
+   "sink": "command_injection",
+   "label": "命令注入",
+   "file": "pkg/handlers/handlers.go",
+   "line": 134,
+   "entry": "Handle05"
+  },
+  {
+   "id": "v06",
+   "sink": "path_traversal",
+   "label": "路径穿越",
+   "file": "pkg/handlers/handlers.go",
+   "line": 146,
+   "entry": "Handle06"
+  },
+  {
+   "id": "v07",
+   "sink": "ssrf",
+   "label": "SSRF",
+   "file": "pkg/handlers/handlers.go",
+   "line": 158,
+   "entry": "Handle07"
+  }
+ ],
+ "total": 8
+}
